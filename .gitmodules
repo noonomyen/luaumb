@@ -1,0 +1,6 @@
+[submodule "submodules/base64"]
+	path = submodules/base64
+	url = https://github.com/tobiaslocker/base64
+[submodule "submodules/luau"]
+	path = submodules/luau
+	url = https://github.com/luau-lang/luau
