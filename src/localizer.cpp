@@ -31,43 +31,24 @@ void luau_fvalue_init() {
     }
 }
 
-struct L_AstExprGlobal : public Luau::AstVisitor {
-    bool ok = false;
-
-    bool visit(class Luau::AstExprGlobal* node) {
-        if (strncmp(node->name.value, "require", 7) == 0) ok = true;
-
-        return true;
-    }
-};
-
-struct L_AstExprConstantString : public Luau::AstVisitor {
-    bool ok = false;
-    std::string value;
-
-    bool visit(class Luau::AstExprConstantString* node) {
-        this->value = node->value.data;
-        ok = true;
-
-        return true;
-    }
-};
-
-struct L_AstExprCall : public Luau::AstVisitor {
+struct FindRequireConstantString : public Luau::AstVisitor {
     std::vector<ExprCallRequire> list;
 
-    bool visit(class Luau::AstExprCall* node) override {
-        L_AstExprGlobal ast_expr_global;
-        node->visit(&ast_expr_global);
+    bool visit(class Luau::AstNode* node) override {
+        if (Luau::AstExprCall* call_node = dynamic_cast<Luau::AstExprCall*>(node)) {
+            Luau::AstExpr* func = call_node->func;
 
-        if (node->args.size == 1) {
-            L_AstExprConstantString ast_expr_constant_string;
-            node->args.data[0]->visit(&ast_expr_constant_string);
+            if (Luau::AstExprGlobal* func_node = dynamic_cast<Luau::AstExprGlobal*>(func)) {
+                if (strncmp(func_node->name.value, "require", 7) == 0) {
+                    Luau::AstExpr* args_0 = call_node->args.data[0];
 
-            if (ast_expr_global.ok && ast_expr_constant_string.ok) this->list.push_back({"", ast_expr_constant_string.value, Location(node->location)});
+                    if (Luau::AstExprConstantString* const_string_node = dynamic_cast<Luau::AstExprConstantString*>(args_0)) {
+                        this->list.push_back({"", const_string_node->value.data, Location(call_node->location)});
+                    }
+                }
+            }
         }
-
-        return false;
+        return true;
     }
 };
 
@@ -81,7 +62,7 @@ RequireFunctionLocalizerResult require_function_localizer(const std::string& sou
 
     Luau::ParseResult result = Luau::Parser::parse(source.data(), source.size(), names, allocator, options);
 
-    L_AstExprCall search;
+    FindRequireConstantString search;
     result.root->visit(&search);
 
     return {result.errors, search.list};

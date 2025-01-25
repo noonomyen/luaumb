@@ -58,6 +58,10 @@ To create the output file, the source code of each module is wrapped in an anony
 - `_LUAUMB_LOADED_NAME` stores the return value of the function on its first execution.
 - `_LUAUMB_NAME` acts as the `require` function (returning `_LUAUMB_LOADED_NAME`).
 
+## `require` function
+
+As you know, luaumb will replace the position of the code where the `require` function is called. It looks for a global `require` function with a single argument that is a constant string. If you want luaumb to skip or ignore the `require` call at that position, you can use something that is not exactly a constant string, such as using `require(("./module"))`. The parser will see that there's a group within the arguments, and the constant string is within that group, causing luaumb to ignore this position.
+
 ## Dependencies
 
 - [luau-lang/luau](https://github.com/luau-lang/luau)
