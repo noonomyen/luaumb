@@ -1,11 +1,6 @@
 local print_counter = require("./lib/print")
 local counters = require("./a")
 
-local sorted_keys = {}
-for k in pairs(counters) do table.insert(sorted_keys, k) end
-
-table.sort(sorted_keys)
-
 print("----- MAIN")
 
 print_counter("Counter A", counters.counter_a)

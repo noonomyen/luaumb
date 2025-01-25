@@ -5,6 +5,10 @@ name: CMake on multiple platforms
 on:
   push:
     branches: [ "master" ]
+    paths:
+        - 'src/**'
+        - 'submodules/**'
+        - 'CMakeLists.txt'
   pull_request:
     branches: [ "master" ]
 
