@@ -40,9 +40,9 @@ int main(int argc, char** argv) {
         RelativePathModule module_path = q.front();
         q.pop();
 
-        if (lmb.is_loaded(module_path.relative)) continue;
+        if (lmb.is_loaded(module_path.relative.string())) continue;
 
-        std::optional<std::string> file = readFile(module_path.path);
+        std::optional<std::string> file = readFile(module_path.path.string());
 
         if (!file) {
             std::cout << "Couldn't read source " << module_path.path << std::endl;
@@ -54,8 +54,8 @@ int main(int argc, char** argv) {
 
         for (ExprCallRequire& require : result.list) {
             RelativePathModule next = relative_path_module(module_path, require.path);
-            require.name = next.relative;
-            lmb.add_dependency(module_path.relative, next.relative);
+            require.name = next.relative.string();
+            lmb.add_dependency(module_path.relative.string(), next.relative.string());
             q.push(next);
         }
 
