@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "JohnnyMorganz.luau-lsp",
+        "Nightrains.robloxlsp"
+    ],
+    "unwantedRecommendations": [
+        "sumneko.lua"
+    ]
+}
