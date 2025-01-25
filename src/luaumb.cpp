@@ -62,10 +62,12 @@ int main(int argc, char** argv) {
         lmb.set_module(module_path, *file, result.list);
     }
 
-    for (auto const& [name, module] : lmb.modules) {
-        std::cout << "Module: " << name << " (" << module.path.path << ")" << std::endl;
+    std::cout << "Modules and dependencies" << std::endl;
+    for (const std::string& name : lmb.load_order()) {
+        const ModuleFile& module = lmb.modules[name];
+        std::cout << "  " << name << "" << std::endl;
         for (const ExprCallRequire& require : module.requires) {
-            std::cout << "  Require: [" << require.path << "] at " << std::string(require.location) << std::endl;
+            std::cout << "  └─ [" << require.path << "] (" << require.name << ") -- " << std::string(require.location) << std::endl;
         }
     }
 
