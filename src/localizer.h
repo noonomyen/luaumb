@@ -4,7 +4,8 @@
 #include <filesystem>
 #include <map>
 
-#include "Luau/Parser.h"
+#include "Luau/Location.h"
+#include "Luau/ParseResult.h"
 
 #include "utils.h"
 

@@ -1,4 +1,7 @@
 #include "utils.h"
+
+#include <sstream>
+
 #include "base64.hpp"
 
 using namespace std;
