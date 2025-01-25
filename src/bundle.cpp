@@ -106,8 +106,10 @@ string LuauModuleBundle::build() {
 
     out += "_LUAUMB_" + nonstd_base64::encode(this->main_path.relative.string()) + "()";
 
-    size_t pos;
-    while ((pos = out.find("\n\n")) != string::npos) out.erase(pos, 1);
+    size_t pos = 0;
+    while ((pos = out.find("\r\n", pos)) != string::npos) out.erase(pos, 1);
+    pos = 0;
+    while ((pos = out.find("\n\n", pos)) != string::npos) out.erase(pos, 1);
 
     return out;
 }
