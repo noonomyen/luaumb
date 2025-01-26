@@ -2,5 +2,5 @@
 	"languageMode": "strict",
 	"lint": { "*": true, "LocalUnused": true },
 	"lintErrors": true,
-	"globals": ["expect"]
+    "typeErrors": true
 }

@@ -60,7 +60,7 @@ To create the output file, the source code of each module is wrapped in an anony
 
 ## `require` function
 
-As you know, luaumb will replace the position of the code where the `require` function is called. It looks for a global `require` function with a single argument that is a constant string. If you want luaumb to skip or ignore the `require` call at that position, you can use something that is not exactly a constant string, such as using `require(("./module"))`. The parser will see that there's a group within the arguments, and the constant string is within that group, causing luaumb to ignore this position.
+As you know, luaumb will replace the position of the code where the `require` function is called. It looks for a global `require` function with a single argument that is a constant string. If you want luaumb to skip or ignore the `require` call at that position, you can use something that is not exactly a constant string, such as using `require(("./module"))`. The parser will see that there's a group within the arguments, and the constant string is within that group, causing luaumb to ignore this position. or `_G.require("./module")` The parser will see that the `require` function is not global.
 
 ## Dependencies
 
