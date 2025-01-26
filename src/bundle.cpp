@@ -12,8 +12,8 @@ bool LuauModuleBundle::is_loaded(const string& name) {
     return this->modules.find(name) != this->modules.end();
 }
 
-void LuauModuleBundle::set_module(const RelativePathModule& module_path, const string& source, const vector<ExprCallRequire>& requires) {
-    this->modules[module_path.relative.string()] = {module_path.relative.string(), source, requires, module_path};
+void LuauModuleBundle::set_module(const RelativePathModule& module_path, const string& source, const vector<ExprCallRequire>& requiress) {
+    this->modules[module_path.relative.string()] = {module_path.relative.string(), source, requiress, module_path};
 }
 
 void LuauModuleBundle::add_dependency(const string& a, const string& b) {
@@ -31,9 +31,9 @@ vector<string> LuauModuleBundle::load_order() {
     vector<int> result;
     vector<string> result_str(size);
 
-    for (int i = 0; i < size; i++) adj[i] = this->dependencies[i];
-    for (int i = 0; i < size; i++) for (auto it : adj[i]) indeg[it]++;
-    for (int i = 0; i < size; i++) if (indeg[i] == 0) q.push(i);
+    for (size_t i = 0; i < size; i++) adj[i] = this->dependencies[i];
+    for (size_t i = 0; i < size; i++) for (auto it : adj[i]) indeg[it]++;
+    for (size_t i = 0; i < size; i++) if (indeg[i] == 0) q.push(i);
 
     while (!q.empty()) {
         int node = q.front();
@@ -47,7 +47,7 @@ vector<string> LuauModuleBundle::load_order() {
     }
 
     if (result.size() != size) throw runtime_error("Error cyclic module dependency");
-    for (int i = 0; i < size; i++) result_str[size - i - 1] = this->module_map_id[result[i]];
+    for (size_t i = 0; i < size; i++) result_str[size - i - 1] = this->module_map_id[result[i]];
 
     return result_str;
 }
@@ -77,7 +77,7 @@ string LuauModuleBundle::build() {
         unsigned int pos_line = 0;
         unsigned int pos_col = 0;
 
-        for (const ExprCallRequire& require : module.requires) {
+        for (const ExprCallRequire& require : module.requiress) {
             const string call = "(_LUAUMB_" + mapped_order[require.name] + "())";
             const Location& location = require.location;
 
@@ -86,7 +86,7 @@ string LuauModuleBundle::build() {
             } else {
                 out += lines[pos_line++].substr(pos_col);
                 pos_col = 0;
-                for (int i = pos_line; i < location.begin_line; i++) out += lines[i];
+                for (unsigned int i = pos_line; i < location.begin_line; i++) out += lines[i];
                 out += lines[location.begin_line].substr(pos_col, location.begin_column) + call;
             }
 
@@ -95,7 +95,7 @@ string LuauModuleBundle::build() {
         }
 
         out += lines[pos_line++].substr(pos_col);
-        if (pos_line < lines.size()) for (int i = pos_line; i < lines.size(); i++) out += lines[i];
+        if (pos_line < lines.size()) for (unsigned int i = pos_line; i < lines.size(); i++) out += lines[i];
         out += "\nend)\n";
         out += "local _LUAUMB_LOADED_" + mapped_name + " = nil\n";
         out += "local _LUAUMB_" + mapped_name + " = (function() if _LUAUMB_LOADED_" + mapped_name + " == nil then ";

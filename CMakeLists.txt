@@ -10,4 +10,10 @@ include_directories(submodules/base64/include)
 
 add_executable(luaumb src/luaumb.cpp src/localizer.cpp src/bundle.cpp src/utils.cpp)
 
+if (MSVC)
+    target_compile_options(luaumb PRIVATE /W4)
+else()
+    target_compile_options(luaumb PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
 target_link_libraries(luaumb PRIVATE Luau.Ast Luau.Analysis Luau.CLI.lib)

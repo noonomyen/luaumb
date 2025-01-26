@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
     for (const std::string& name : lmb.load_order()) {
         const ModuleFile& module = lmb.modules[name];
         std::cout << "  " << name << "" << std::endl;
-        for (const ExprCallRequire& require : module.requires) {
+        for (const ExprCallRequire& require : module.requiress) {
             std::cout << "  └─ [" << require.path << "] (" << require.name << ") -- " << std::string(require.location) << std::endl;
         }
     }

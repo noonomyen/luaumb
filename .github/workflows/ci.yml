@@ -1,0 +1,66 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+        - 'src/**'
+        - 'submodules/**'
+        - 'CMakeLists.txt'
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        build_type: [Release]
+        c_compiler: [gcc, clang, cl]
+        include:
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+          - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+        exclude:
+          - os: windows-latest
+            c_compiler: gcc
+          - os: windows-latest
+            c_compiler: clang
+          - os: ubuntu-latest
+            c_compiler: cl
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Cache CMake
+      id: cache-cmake
+      uses: actions/cache@v4
+      with:
+        path: build
+        key: cache-cmake-${{ runner.os }}-${{ matrix.c_compiler }}-${{ matrix.build_type }}
+
+    - name: Check Cache Hit
+      if: steps.cache-cmake.outputs.cache-hit == 'true'
+      run: echo "Cache hit"
+
+    - name: Configure CMake
+      run: >
+        cmake -B ./build
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build ./build --config ${{ matrix.build_type }} --parallel

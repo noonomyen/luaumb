@@ -12,7 +12,7 @@
 struct ModuleFile {
     std::string name;
     std::string source;
-    std::vector<ExprCallRequire> requires;
+    std::vector<ExprCallRequire> requiress;
     RelativePathModule path;
 };
 
@@ -25,7 +25,7 @@ class LuauModuleBundle {
 
         LuauModuleBundle(const RelativePathModule& main_path);
         bool is_loaded(const std::string& name);
-        void set_module(const RelativePathModule& module_path, const std::string& source, const std::vector<ExprCallRequire>& requires);
+        void set_module(const RelativePathModule& module_path, const std::string& source, const std::vector<ExprCallRequire>& requiress);
         void add_dependency(const std::string& a, const std::string& b);
         std::vector<std::string> load_order();
         std::string build();
