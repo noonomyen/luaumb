@@ -56,9 +56,6 @@ int main(int argc, char** argv) {
         if (configs.find(config_file_relative_path) == configs.end()) {
             Luau::Config config;
 
-            std::filesystem::path config_file_path = module_path.path;
-            config_file_path.replace_filename(Luau::kConfigName);
-
             std::filesystem::path relative = module_path.relative.parent_path().parent_path();
             while (relative.string() != "/") {
                 const auto it = configs.find(relative.string());
@@ -70,14 +67,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-            if (std::filesystem::exists(config_file_path.string())) {
-                std::optional<std::string> config_file = readFile(config_file_path);
-
-                if (!config_file) {
-                    std::cout << "Couldn't read config " << module_path.path << std::endl;
-                    return 1;
-                }
-
+            if (std::optional<std::string> config_file = readFile(module_path.path.replace_filename(Luau::kConfigName).string())) {
                 Luau::ConfigOptions config_option = {false, std::optional<Luau::ConfigOptions::AliasOptions>({config_file_relative_path, true})};
                 std::optional<std::string> error = Luau::parseConfig(*config_file, config, config_option);
 
