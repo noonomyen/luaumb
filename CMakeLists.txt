@@ -16,4 +16,4 @@ else()
     target_compile_options(luaumb PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-target_link_libraries(luaumb PRIVATE Luau.Ast Luau.Analysis Luau.CLI.lib)
+target_link_libraries(luaumb PRIVATE Luau.Ast Luau.Analysis Luau.CLI.lib Luau.Config)
