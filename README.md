@@ -25,25 +25,31 @@ mkdir -p tmp
 ./luaumb ./example/main.luau ./tmp/out.luau
 
 Modules and dependencies
-  lib/count.luau
-  lib/print.luau
-  c.luau
-  └─ [./lib/print] (lib/print.luau) -- 0:22-0:44
-  └─ [./lib/count] (lib/count.luau) -- 1:16-1:38
-  b.luau
-  └─ [./lib/print] (lib/print.luau) -- 0:22-0:44
-  └─ [./lib/count] (lib/count.luau) -- 1:16-1:38
-  └─ [./c] (c.luau) -- 2:18-2:32
-  lib/pi.luau
-  a.luau
-  └─ [./lib/print] (lib/print.luau) -- 0:22-0:44
-  └─ [./lib/count] (lib/count.luau) -- 1:16-1:38
-  └─ [./b] (b.luau) -- 2:18-2:32
-  └─ [./c] (c.luau) -- 3:18-3:32
-  main.luau
-  └─ [./lib/print] (lib/print.luau) -- 0:22-0:44
-  └─ [./a] (a.luau) -- 1:17-1:31
-  └─ [./lib/pi] (lib/pi.luau) -- 18:11-18:30
+  /lib/count.luau
+  /lib/print.luau
+  /hello/world.luau
+  /c.luau
+  └─ [./lib/print] (/lib/print.luau) -- 0:22-0:44
+  └─ [./lib/count] (/lib/count.luau) -- 1:16-1:38
+  /hello/space/init.luau
+  └─ [@w] (/hello/world.luau) -- 1:19-1:32
+  /b.luau
+  └─ [./lib/print] (/lib/print.luau) -- 0:22-0:44
+  └─ [./lib/count] (/lib/count.luau) -- 1:16-1:38
+  └─ [./c] (/c.luau) -- 2:18-2:32
+  /hello/init.luau
+  └─ [@s] (/hello/space/init.luau) -- 1:23-1:36
+  /lib/pi.luau
+  /a.luau
+  └─ [./lib/print] (/lib/print.luau) -- 0:22-0:44
+  └─ [./lib/count] (/lib/count.luau) -- 1:16-1:38
+  └─ [./b] (/b.luau) -- 2:18-2:32
+  └─ [./c] (/c.luau) -- 3:18-3:32
+  /main.luau
+  └─ [@print] (/lib/print.luau) -- 0:22-0:39
+  └─ [./a] (/a.luau) -- 1:17-1:31
+  └─ [./lib/pi] (/lib/pi.luau) -- 13:11-13:30
+  └─ [./hello] (/hello/init.luau) -- 20:6-20:24
 ```
 
 ## How It Works
