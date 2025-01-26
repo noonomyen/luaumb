@@ -101,6 +101,8 @@ int main(int argc, char** argv) {
                 if (alias_info == NULL) throw std::runtime_error("Error, is not a valid alias: " + require.path);
                 path = alias_info->configLocation;
                 path = path.lexically_relative(module_path.relative.parent_path()).relative_path() / std::filesystem::path(alias_info->value);
+            } else {
+                continue;
             }
 
             RelativePathModule next = relative_path_module(module_path, path);
