@@ -35,14 +35,14 @@ struct FindRequireConstantString : public Luau::AstVisitor {
     std::vector<ExprCallRequire> list;
 
     bool visit(class Luau::AstNode* node) override {
-        if (Luau::AstExprCall* call_node = dynamic_cast<Luau::AstExprCall*>(node)) {
+        if (Luau::AstExprCall* call_node = node->as<Luau::AstExprCall>()) {
             Luau::AstExpr* func = call_node->func;
 
-            if (Luau::AstExprGlobal* func_node = dynamic_cast<Luau::AstExprGlobal*>(func)) {
+            if (Luau::AstExprGlobal* func_node = func->as<Luau::AstExprGlobal>()) {
                 if (strncmp(func_node->name.value, "require", 7) == 0) {
                     Luau::AstExpr* args_0 = call_node->args.data[0];
 
-                    if (Luau::AstExprConstantString* const_string_node = dynamic_cast<Luau::AstExprConstantString*>(args_0)) {
+                    if (Luau::AstExprConstantString* const_string_node = args_0->as<Luau::AstExprConstantString>()) {
                         this->list.push_back({"", const_string_node->value.data, Location(call_node->location)});
                     }
                 }
