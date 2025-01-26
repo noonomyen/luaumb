@@ -1,6 +1,6 @@
 {
-	"languageMode": "strict",
-	"lint": { "*": true, "LocalUnused": true },
-	"lintErrors": true,
+    "languageMode": "strict",
+    "lint": { "*": true, "LocalUnused": true },
+    "lintErrors": true,
     "typeErrors": true
 }
