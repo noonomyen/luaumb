@@ -1,6 +1,5 @@
-local print_counter = require("./lib/print")
+local print_counter = require("@print")
 local counters = require("./a")
-local hello = require("./hello").hello
 
 print("----- MAIN")
 
@@ -19,6 +18,4 @@ print("-----")
 
 print("Try to print Counter without require: " .. tostring(Counter))
 
-hello()
-
-print("MAIN LOADED")
+print(require("./hello").text)

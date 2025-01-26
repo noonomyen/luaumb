@@ -9,6 +9,7 @@
 
 #include "Luau/ToString.h"
 #include "Luau/FileUtils.h"
+#include "Luau/Config.h"
 
 #include "localizer.h"
 #include "bundle.h"
@@ -31,6 +32,7 @@ int main(int argc, char** argv) {
     const char* out_name = argv[2];
 
     std::vector<Luau::ParseError> errors;
+    std::map<std::string, Luau::Config> configs;
     RelativePathModule main_path(in_name);
     LuauModuleBundle lmb(main_path);
     std::queue<RelativePathModule> q;
@@ -49,11 +51,59 @@ int main(int argc, char** argv) {
             return 1;
         }
 
+        const std::string config_file_relative_path = module_path.relative.parent_path().string();
+
+        if (configs.find(config_file_relative_path) == configs.end()) {
+            Luau::Config config;
+
+            std::filesystem::path config_file_path = module_path.path;
+            config_file_path.replace_filename(Luau::kConfigName);
+
+            std::filesystem::path relative = module_path.relative.parent_path().parent_path();
+            while (relative.string() != "/") {
+                const auto it = configs.find(relative.string());
+                if (it != configs.end()) {
+                    config = Luau::Config(it->second);
+                    break;
+                } else {
+                    relative = relative.parent_path();
+                }
+            }
+
+            if (std::filesystem::exists(config_file_path.string())) {
+                std::optional<std::string> config_file = readFile(config_file_path);
+
+                if (!config_file) {
+                    std::cout << "Couldn't read config " << module_path.path << std::endl;
+                    return 1;
+                }
+
+                Luau::ConfigOptions config_option = {false, std::optional<Luau::ConfigOptions::AliasOptions>({config_file_relative_path, true})};
+                std::optional<std::string> error = Luau::parseConfig(*config_file, config, config_option);
+
+                if (error) throw std::runtime_error("Error parsing config: " + *error + "\n  File: " + module_path.path.string());
+            }
+
+            configs[config_file_relative_path] = config;
+        }
+
+        const Luau::Config& config = configs[config_file_relative_path];
+
         RequireFunctionLocalizerResult result = require_function_localizer(*file);
         errors.insert(errors.end(), result.parse_errors.begin(), result.parse_errors.end());
 
         for (ExprCallRequire& require : result.list) {
-            RelativePathModule next = relative_path_module(module_path, require.path);
+            std::filesystem::path path;
+            if (require.path.rfind("./", 0) == 0 || require.path.rfind("../", 0) == 0) {
+                path = require.path;
+            } else if (require.path.rfind("@", 0) == 0) {
+                const auto alias_info = config.aliases.find(require.path.substr(1));
+                if (alias_info == NULL) throw std::runtime_error("Error, is not a valid alias: " + require.path);
+                path = alias_info->configLocation;
+                path = path.lexically_relative(module_path.relative.parent_path()).relative_path() / std::filesystem::path(alias_info->value);
+            }
+
+            RelativePathModule next = relative_path_module(module_path, path);
             require.name = next.relative.string();
             lmb.add_dependency(module_path.relative.string(), next.relative.string());
             q.push(next);

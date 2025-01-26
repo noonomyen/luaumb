@@ -12,8 +12,6 @@ counter_c:increment(10)
 print_counter("Counter B", counter_b)
 print_counter("Counter C", counter_c)
 
-print("B LOADED")
-
 return {
     counter_b = counter_b,
     counter_c = counter_c

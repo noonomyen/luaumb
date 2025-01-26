@@ -8,8 +8,6 @@ print("----- C (C+15)")
 counter_c:increment(15)
 print_counter("Counter C", counter_c)
 
-print("C LOADED")
-
 return {
     counter_c = counter_c
 }

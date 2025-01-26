@@ -13,8 +13,6 @@ print_counter("Counter A", counter_a)
 print_counter("Counter B", counter_b)
 print_counter("Counter C", counter_c)
 
-print("A LOADED")
-
 return {
     counter_a = counter_a,
     counter_b = counter_b,

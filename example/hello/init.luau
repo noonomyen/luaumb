@@ -1,7 +1,3 @@
-print("HELLO/INIT LOADED")
-
 return {
-    hello = function()
-        print("Hello")
-    end
+    text = ("Hello" .. require("@s").text)
 }

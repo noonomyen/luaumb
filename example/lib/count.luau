@@ -19,6 +19,4 @@ function Counter:increment(amount: number?)
     self.count += amount or 1
 end
 
-print("LIB/COUNT LOADED")
-
 return Counter

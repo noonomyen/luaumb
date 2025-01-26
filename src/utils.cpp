@@ -12,13 +12,15 @@ const std::array<const string, 4> module_suffixes = {".luau", ".lua", "/init.lua
 
 RelativePathModule::RelativePathModule(const fs::path& root, const fs::path& relative, const fs::path& path) {
     this->root = root;
-    this->relative = relative;
+    this->relative = relative.is_absolute() ? relative : fs::path("/") / relative;
     this->path = path;
 }
 
 RelativePathModule::RelativePathModule(const fs::path& main_path) {
     this->path = main_path.lexically_normal();
-    this->relative = main_path.filename();
+    fs::path root_relative("/");
+    root_relative += main_path.filename();
+    this->relative = root_relative;
     this->root = main_path.parent_path();
 
     if (!fs::exists(this->path)) {
