@@ -8,6 +8,8 @@ using namespace std;
 
 namespace fs = filesystem;
 
+const std::array<const string, 4> module_suffixes = {".luau", ".lua", "/init.luau", "/init.lua"};
+
 RelativePathModule::RelativePathModule(const fs::path& root, const fs::path& relative, const fs::path& path) {
     this->root = root;
     this->relative = relative;
@@ -34,13 +36,18 @@ RelativePathModule::operator string() const {
 RelativePathModule relative_path_module(const RelativePathModule& parent_path, const fs::path& module_path) {
     fs::path path = (parent_path.path.parent_path() / module_path).lexically_normal();
 
-    path += ".luau";
-    if (!fs::exists(path)) {
-        path.replace_extension(".lua");
-        if (!fs::exists(path)) {
-            throw runtime_error("Error module file not found\n  Parent: " + string(parent_path) + "\n  File: " + path.string());
+    bool found = false;
+    for (string ext : module_suffixes) {
+        fs::path _path = path;
+        _path += ext;
+        if (fs::exists(_path)) {
+            found = true;
+            path = _path;
+            break;
         }
     }
+
+    if (!found) throw runtime_error("Error module file not found\n  Parent: " + string(parent_path) + "\n  File: " + path.string());
 
     return RelativePathModule(parent_path.root, path.lexically_proximate(parent_path.root), path);
 }
