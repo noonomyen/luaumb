@@ -25,18 +25,22 @@ mkdir -p tmp
 ./luaumb ./example/main.luau ./tmp/out.luau
 
 Modules and dependencies
+Modules and dependencies
   /lib/count.luau
   /lib/print.luau
   /hello/world.luau
   /c.luau
   └─ [./lib/print] (/lib/print.luau) -- 0:22-0:44
   └─ [./lib/count] (/lib/count.luau) -- 1:16-1:38
+  /good/space/space.luau
   /hello/space/init.luau
   └─ [@w] (/hello/world.luau) -- 1:19-1:32
   /b.luau
   └─ [./lib/print] (/lib/print.luau) -- 0:22-0:44
   └─ [./lib/count] (/lib/count.luau) -- 1:16-1:38
   └─ [./c] (/c.luau) -- 2:18-2:32
+  /good/space/world/init.luau
+  └─ [@space] (/good/space/space.luau) -- 1:22-1:39
   /hello/init.luau
   └─ [@s] (/hello/space/init.luau) -- 1:23-1:36
   /lib/pi.luau
@@ -50,6 +54,7 @@ Modules and dependencies
   └─ [./a] (/a.luau) -- 1:17-1:31
   └─ [./lib/pi] (/lib/pi.luau) -- 13:11-13:30
   └─ [./hello] (/hello/init.luau) -- 20:6-20:24
+  └─ [./good/space/world] (/good/space/world/init.luau) -- 21:6-21:35
 ```
 
 ## How It Works
