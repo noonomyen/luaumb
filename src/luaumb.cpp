@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <queue>
+#include <stack>
 #include <filesystem>
 #include <optional>
 #include <fstream>
@@ -51,34 +52,42 @@ int main(int argc, char** argv) {
             return 1;
         }
 
-        const std::string config_file_relative_path = module_path.relative.parent_path().string();
+        std::filesystem::path relative_path = module_path.relative.parent_path();
 
-        if (configs.find(config_file_relative_path) == configs.end()) {
-            Luau::Config config;
+        if (configs.find(relative_path.string()) == configs.end()) {
+            std::stack<std::pair<const std::string, std::optional<std::string>>> config_stack;
 
-            std::filesystem::path relative = module_path.relative.parent_path().parent_path();
-            while (relative.string() != "/") {
-                const auto it = configs.find(relative.string());
-                if (it != configs.end()) {
-                    config = Luau::Config(it->second);
+            while (true) {
+                if ((configs.find(relative_path.string()) != configs.end())) {
+                    Luau::Config config = configs[relative_path.string()];
+
+                    while (!config_stack.empty()) {
+                        const auto [path, config_file] = config_stack.top();
+                        config_stack.pop();
+
+                        if (config_file) {
+                            Luau::ConfigOptions config_option = {false, std::optional<Luau::ConfigOptions::AliasOptions>({path, true})};
+                            std::optional<std::string> error = Luau::parseConfig(*config_file, config, config_option);
+
+                            if (error) throw std::runtime_error("Error parsing config: " + *error + "\n  File: " + module_path.path.string());
+                        } else {
+                            config = Luau::Config(config);
+                        }
+
+                        configs[path] = config;
+                    }
+
                     break;
-                } else {
-                    relative = relative.parent_path();
                 }
+
+                config_stack.push({relative_path.string(), readFile((module_path.root / relative_path.relative_path() / Luau::kConfigName).string())});
+
+                if (relative_path.string() == "/") configs["/"] = Luau::Config();
+                else relative_path = relative_path.parent_path();
             }
-
-            const std::filesystem::path config_file_path = module_path.path.parent_path() / Luau::kConfigName;
-            if (std::optional<std::string> config_file = readFile(config_file_path.string())) {
-                Luau::ConfigOptions config_option = {false, std::optional<Luau::ConfigOptions::AliasOptions>({config_file_relative_path, true})};
-                std::optional<std::string> error = Luau::parseConfig(*config_file, config, config_option);
-
-                if (error) throw std::runtime_error("Error parsing config: " + *error + "\n  File: " + module_path.path.string());
-            }
-
-            configs[config_file_relative_path] = config;
         }
 
-        const Luau::Config& config = configs[config_file_relative_path];
+        const Luau::Config& config = configs[module_path.relative.parent_path().string()];
 
         RequireFunctionLocalizerResult result = require_function_localizer(*file);
         errors.insert(errors.end(), result.parse_errors.begin(), result.parse_errors.end());
