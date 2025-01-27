@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     const char* in_name = argv[1];
     const char* out_name = argv[2];
 
-    std::vector<Luau::ParseError> errors;
+    std::map<const std::string, std::vector<Luau::ParseError>> parse_errors;
     std::map<std::string, Luau::Config> configs;
     RelativePathModule main_path(in_name);
     LuauModuleBundle lmb(main_path);
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
         const Luau::Config& config = configs[module_path.relative.parent_path().string()];
 
         RequireFunctionLocalizerResult result = require_function_localizer(*file);
-        errors.insert(errors.end(), result.parse_errors.begin(), result.parse_errors.end());
+        if (result.parse_errors.size() != 0) parse_errors[module_path.path.string()] = result.parse_errors;
 
         for (ExprCallRequire& require : result.list) {
             std::filesystem::path path;
@@ -123,10 +123,13 @@ int main(int argc, char** argv) {
         }
     }
 
-    if (errors.size() > 0) {
+    if (parse_errors.size() > 0) {
         std::cout << "Parse errors were encountered:" << std::endl;
-        for (const Luau::ParseError& error : errors) {
-            std::cout << "  " << toString(error.getLocation()) << " - " << error.getMessage() << std::endl;
+        for (const auto& [file, errors] : parse_errors) {
+            for (const Luau::ParseError& error : errors) {
+                Luau::Location error_location = error.getLocation();
+                std::cout << "  " << file << ":" << (error_location.begin.line + 1) << ":" << (error_location.begin.column + 1) << " - " << error.getMessage() << std::endl;
+            }
         }
     }
 
@@ -139,5 +142,5 @@ int main(int argc, char** argv) {
     out_file << out;
     out_file.close();
 
-    return errors.size() > 0 ? 1 : 0;
+    return parse_errors.size() > 0 ? 1 : 0;
 }
