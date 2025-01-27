@@ -67,7 +67,8 @@ int main(int argc, char** argv) {
                 }
             }
 
-            if (std::optional<std::string> config_file = readFile(module_path.path.replace_filename(Luau::kConfigName).string())) {
+            const std::filesystem::path config_file_path = module_path.path.parent_path() / Luau::kConfigName;
+            if (std::optional<std::string> config_file = readFile(config_file_path.string())) {
                 Luau::ConfigOptions config_option = {false, std::optional<Luau::ConfigOptions::AliasOptions>({config_file_relative_path, true})};
                 std::optional<std::string> error = Luau::parseConfig(*config_file, config, config_option);
 
