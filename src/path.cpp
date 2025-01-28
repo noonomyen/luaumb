@@ -1,6 +1,7 @@
 #include "path.hpp"
 
 #include <array>
+#include <sstream>
 
 using namespace std;
 
