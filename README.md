@@ -14,7 +14,7 @@ cmake .. && cmake --build . -j $(nproc)
 ## Usage
 
 ```txt
-Luau module bundle - v0.1
+Luau module bundle - 0.1-dev luau:0.658-release base64:387b32f-checkout
   luaumb [main.luau] [out.luau]
 ```
 
@@ -24,7 +24,6 @@ Luau module bundle - v0.1
 mkdir -p tmp
 ./luaumb ./example/main.luau ./tmp/out.luau
 
-Modules and dependencies
 Modules and dependencies
   /lib/count.luau
   /lib/print.luau

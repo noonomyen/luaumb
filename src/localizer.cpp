@@ -1,4 +1,4 @@
-#include "localizer.h"
+#include "localizer.hpp"
 
 #include <string>
 #include <sstream>
@@ -23,12 +23,6 @@ Location::operator std::string() const {
     ss << begin_line << ":" << begin_column << "-" << end_line << ":" << end_column;
 
     return ss.str();
-}
-
-void luau_fvalue_init() {
-    for (Luau::FValue<bool>* flag = Luau::FValue<bool>::list; flag; flag = flag->next) {
-        if (strncmp(flag->name, "Luau", 4) == 0) flag->value = true;
-    }
 }
 
 struct FindRequireConstantString : public Luau::AstVisitor {

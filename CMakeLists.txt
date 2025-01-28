@@ -8,7 +8,16 @@ add_subdirectory(submodules/luau)
 
 include_directories(submodules/base64/include)
 
-add_executable(luaumb src/luaumb.cpp src/localizer.cpp src/bundle.cpp src/utils.cpp)
+add_executable(
+    luaumb
+
+    src/main.cpp
+    src/path.cpp
+    src/luaumb.cpp
+    src/localizer.cpp
+    src/bundle.cpp
+    src/utils.cpp
+)
 
 if (MSVC)
     target_compile_options(luaumb PRIVATE /W4)

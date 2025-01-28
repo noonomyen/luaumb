@@ -6,8 +6,9 @@
 #include <map>
 #include <filesystem>
 
-#include "localizer.h"
-#include "utils.h"
+#include "path.hpp"
+#include "localizer.hpp"
+#include "utils.hpp"
 
 struct ModuleFile {
     std::string name;

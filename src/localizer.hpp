@@ -7,7 +7,7 @@
 #include "Luau/Location.h"
 #include "Luau/ParseResult.h"
 
-#include "utils.h"
+#include "utils.hpp"
 
 struct Location {
     unsigned int begin_line, begin_column, end_line, end_column;
@@ -27,7 +27,6 @@ struct RequireFunctionLocalizerResult {
     std::vector<ExprCallRequire> list;
 };
 
-void luau_fvalue_init();
 RequireFunctionLocalizerResult require_function_localizer(const std::string& source);
 
 #endif /* LUAUMB_LOCALIZER_H */

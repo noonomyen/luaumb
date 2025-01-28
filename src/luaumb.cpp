@@ -8,33 +8,34 @@
 #include <optional>
 #include <fstream>
 
-#include "Luau/ToString.h"
 #include "Luau/FileUtils.h"
 #include "Luau/Config.h"
 
-#include "localizer.h"
-#include "bundle.h"
-#include "utils.h"
+#include "luaumb.hpp"
+#include "path.hpp"
+#include "localizer.hpp"
+#include "bundle.hpp"
+#include "utils.hpp"
 
-#ifndef LUAUMB_VERSION
-#define LUAUMB_VERSION "0.1"
-#endif
+bool fvalue_inited = false;
 
-int main(int argc, char** argv) {
-    luau_fvalue_init();
-
-    if ((argc < 3) || (argc >= 3 && strcmp(argv[1], "--help") == 0)) {
-        std::cout << "Luau module bundle - v" << LUAUMB_VERSION << std::endl;
-        std::cout << "  luaumb [main.luau] [out.luau]" << std::endl;
-        return 0;
+void luau_fvalue_init() {
+    for (Luau::FValue<bool>* flag = Luau::FValue<bool>::list; flag; flag = flag->next) {
+        if (strncmp(flag->name, "Luau", 4) == 0) flag->value = true;
     }
+}
 
-    const char* in_name = argv[1];
-    const char* out_name = argv[2];
+// TODO: handle error/result by returning it instead of outputting it to stdout.
+
+void luaumb::bundle(const std::string& main_file, const std::string& out_file) {
+    if (!fvalue_inited) {
+        luau_fvalue_init();
+        fvalue_inited = true;
+    }
 
     std::map<const std::string, std::vector<Luau::ParseError>> parse_errors;
     std::map<std::string, Luau::Config> configs;
-    RelativePathModule main_path(in_name);
+    RelativePathModule main_path(main_file);
     LuauModuleBundle lmb(main_path);
     std::queue<RelativePathModule> q;
     q.push(main_path);
@@ -49,7 +50,7 @@ int main(int argc, char** argv) {
 
         if (!file) {
             std::cout << "Couldn't read source " << module_path.path << std::endl;
-            return 1;
+            return; // TODO: Return error
         }
 
         std::filesystem::path relative_path = module_path.relative.parent_path();
@@ -134,13 +135,11 @@ int main(int argc, char** argv) {
     }
 
     const std::string out = lmb.build();
-    std::ofstream out_file(out_name);
-    if (!out_file) {
-        std::cout << "Couldn't open output file " << out_name << std::endl;
-        return 1;
+    std::ofstream out_fs(out_file);
+    if (!out_fs) {
+        std::cout << "Couldn't open output file " << out_file << std::endl;
+        return; // TODO: Return error
     }
-    out_file << out;
-    out_file.close();
-
-    return parse_errors.size() > 0 ? 1 : 0;
+    out_fs << out;
+    out_fs.close();
 }
