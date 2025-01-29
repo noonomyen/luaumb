@@ -55,7 +55,7 @@ vector<string> LuauModuleBundle::load_order() {
 string LuauModuleBundle::build() {
     if (this->modules.find(this->main_path.relative.string()) == this->modules.end()) throw runtime_error("Error main module not found");
 
-    const vector<string> order = this->load_order();
+    const vector<string> order = (this->modules.size() == 1) ? vector<string>{this->modules.begin()->first} : this->load_order();
     map<string, string> mapped_order;
 
     for (string name : order) mapped_order[name] = nonstd_base64::encode(name);
