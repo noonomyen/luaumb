@@ -25,4 +25,10 @@ else()
     target_compile_options(luaumb PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+if (NOT DEFINED LUAUMB_VERSION)
+    set(LUAUMB_VERSION "0.1-dev")
+endif()
+
+target_compile_definitions(luaumb PRIVATE LUAUMB_VERSION="${LUAUMB_VERSION}")
+
 target_link_libraries(luaumb PRIVATE Luau.Ast Luau.Analysis Luau.CLI.lib Luau.Config)

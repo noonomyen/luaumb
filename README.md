@@ -11,6 +11,18 @@ mkdir -p build && cd build
 cmake .. && cmake --build . -j $(nproc)
 ```
 
+## Download from last build CI
+
+This is a temporary workaround because some commits may fail to build or have bugs that cause the program to malfunction.
+
+- [LICENSE.txt](https://cdn.noonomyen.com/static/repo/luaumb/ci-last-build/LICENSE.txt)
+
+| Build | OS | Compiler | Link |
+| :- | :- | :- | :- |
+| Release | Ubuntu | GCC | [luaumb](https://cdn.noonomyen.com/static/repo/luaumb/ci-last-build/Release/ubuntu-latest/gcc/luaumb) |
+| Release | Ubuntu | Clang | [luaumb](https://cdn.noonomyen.com/static/repo/luaumb/ci-last-build/Release/ubuntu-latest/clang/luaumb) |
+| Release | Windows | MSVC | [luaumb.exe](https://cdn.noonomyen.com/static/repo/luaumb/ci-last-build/Release/windows-latest/cl/luaumb.exe) |
+
 ## Usage
 
 ```txt

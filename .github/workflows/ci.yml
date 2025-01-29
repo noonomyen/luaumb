@@ -3,12 +3,6 @@ name: Continuous Integration
 on:
   push:
     branches: [ "master" ]
-    paths:
-        - 'src/**'
-        - 'submodules/**'
-        - 'CMakeLists.txt'
-  pull_request:
-    branches: [ "master" ]
 
 jobs:
   build:
@@ -24,12 +18,18 @@ jobs:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
+            target_name: luaumb.exe
+            output_file: build/Release
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
+            target_name: luaumb
+            output_file: build
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
+            target_name: luaumb
+            output_file: build
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -43,24 +43,18 @@ jobs:
       with:
         submodules: recursive
 
-    # - name: Cache CMake
-    #   id: cache-cmake
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: build
-    #     key: cache-cmake-${{ runner.os }}-${{ matrix.c_compiler }}-${{ matrix.build_type }}
-
-    # - name: Check Cache Hit
-    #   if: steps.cache-cmake.outputs.cache-hit == 'true'
-    #   run: echo "Cache hit"
-
     - name: Configure CMake
       run: >
         cmake -B ./build
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DLUAUMB_VERSION=${{ github.sha }}
         -S ${{ github.workspace }}
 
     - name: Build
       run: cmake --build ./build --config ${{ matrix.build_type }} --parallel
+
+    - name: Upload last build
+      run: |
+        curl -X PUT -H "Authorization: Bearer ${{ secrets.CDN_API_NOONOMYEN }}" --data-binary "@${{ matrix.output_file }}/${{ matrix.target_name }}" "https://cdn-api.noonomyen.com/static/repo/luaumb?key=ci-last-build/${{ matrix.build_type }}/${{ matrix.os }}/${{ matrix.c_compiler }}/${{ matrix.target_name }}"
