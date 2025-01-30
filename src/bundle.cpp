@@ -66,7 +66,8 @@ string LuauModuleBundle::build() {
         const ModuleFile& module = this->modules[name];
         const string& mapped_name = mapped_order[name];
 
-        out += "local _LUAUMB_MODULE_" + mapped_name + " = (function()\n";
+        out += "-- " + module.path.relative.string() + "\n";
+        out += "local _LUAUMB_MODULE_" + mapped_name + " = function()\n";
 
         vector<string> lines;
         stringstream ss(module.source);
@@ -78,7 +79,7 @@ string LuauModuleBundle::build() {
         unsigned int pos_col = 0;
 
         for (const ExprCallRequire& require : module.requiress) {
-            const string call = "(_LUAUMB_" + mapped_order[require.name] + "())";
+            const string call = "_LUAUMB_" + mapped_order[require.name] + "()";
             const Location& location = require.location;
 
             if (location.begin_line == pos_line) {
@@ -96,12 +97,12 @@ string LuauModuleBundle::build() {
 
         out += lines[pos_line++].substr(pos_col);
         if (pos_line < lines.size()) for (unsigned int i = pos_line; i < lines.size(); i++) out += lines[i];
-        out += "\nend)\n";
+        out += "\nend\n";
         out += "local _LUAUMB_LOADED_" + mapped_name + " = nil\n";
-        out += "local _LUAUMB_" + mapped_name + " = (function() if _LUAUMB_LOADED_" + mapped_name + " == nil then ";
+        out += "local _LUAUMB_" + mapped_name + " = function() if _LUAUMB_LOADED_" + mapped_name + " == nil then ";
         out += "_LUAUMB_LOADED_" + mapped_name + " = _LUAUMB_MODULE_" + mapped_name + "() ";
         out += "end; return _LUAUMB_LOADED_" + mapped_name + "; ";
-        out += "end)\n";
+        out += "end\n";
     }
 
     out += "_LUAUMB_" + nonstd_base64::encode(this->main_path.relative.string()) + "()";

@@ -33,6 +33,7 @@ void luaumb::bundle(const std::string& main_file, const std::string& out_file) {
         fvalue_inited = true;
     }
 
+    std::vector<std::string> warning_messages;
     std::map<const std::string, std::vector<Luau::ParseError>> parse_errors;
     std::map<std::string, Luau::Config> configs;
     RelativePathModule main_path(main_file);
@@ -49,8 +50,13 @@ void luaumb::bundle(const std::string& main_file, const std::string& out_file) {
         std::optional<std::string> file = readFile(module_path.path.string());
 
         if (!file) {
-            std::cout << "Couldn't read source " << module_path.path << std::endl;
+            std::cout << "Couldn't read source " << module_path.path.string() << std::endl;
             return; // TODO: Return error
+        }
+
+        if ((*file).length() == 0) {
+            *file = "return nil";
+            warning_messages.push_back(module_path.path.string() + " - File is empty (will return nil)");
         }
 
         std::filesystem::path relative_path = module_path.relative.parent_path();
@@ -81,7 +87,9 @@ void luaumb::bundle(const std::string& main_file, const std::string& out_file) {
                     break;
                 }
 
-                config_stack.push({relative_path.string(), readFile((module_path.root / relative_path.relative_path() / Luau::kConfigName).string())});
+                std::optional<std::string> file = readFile((module_path.root / relative_path.relative_path() / Luau::kConfigName).string());
+                if (file.has_value() && (*file).length() == 0) throw std::runtime_error("Error reading config file: " + (module_path.root / relative_path.relative_path() / Luau::kConfigName).string());
+                config_stack.push({relative_path.string(), file});
 
                 if (relative_path.string() == "/") configs["/"] = Luau::Config();
                 else relative_path = relative_path.parent_path();
@@ -121,6 +129,13 @@ void luaumb::bundle(const std::string& main_file, const std::string& out_file) {
         std::cout << "  " << name << "" << std::endl;
         for (const ExprCallRequire& require : module.requiress) {
             std::cout << "  └─ [" << require.path << "] (" << require.name << ") -- " << std::string(require.location) << std::endl;
+        }
+    }
+
+    if (warning_messages.size() > 0) {
+        std::cout << "Warnings were encountered:" << std::endl;
+        for (const std::string& message : warning_messages) {
+            std::cout << "  " << message << std::endl;
         }
     }
 
