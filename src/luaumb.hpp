@@ -8,11 +8,11 @@
 #endif
 
 #ifndef LUAUMB_LUAU_VERSION
-#define LUAUMB_LUAU_VERSION "0.658-release"
+#define LUAUMB_LUAU_VERSION "0.670"
 #endif
 
 #ifndef LUAUMB_LIB_BASE64_VERSION
-#define LUAUMB_LIB_BASE64_VERSION "387b32f-checkout"
+#define LUAUMB_LIB_BASE64_VERSION "0d0f5a8"
 #endif
 
 namespace luaumb {
