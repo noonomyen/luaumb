@@ -15,7 +15,6 @@
 #include "path.hpp"
 #include "localizer.hpp"
 #include "bundle.hpp"
-#include "utils.hpp"
 
 bool fvalue_inited = false;
 

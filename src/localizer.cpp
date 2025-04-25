@@ -9,7 +9,6 @@
 #include "Luau/Lexer.h"
 #include "Luau/Parser.h"
 #include "Luau/ParseOptions.h"
-#include "Luau/Common.h"
 
 Location::Location(const Luau::Location& location) {
     this->begin_line = location.begin.line;

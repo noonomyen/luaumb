@@ -1,7 +1,5 @@
 #include "utils.hpp"
 
-#include <sstream>
-
 #include "base64.hpp"
 
 using namespace std;

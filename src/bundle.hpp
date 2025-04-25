@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <filesystem>
 
 #include "path.hpp"
 #include "localizer.hpp"

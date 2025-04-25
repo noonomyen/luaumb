@@ -42,3 +42,4 @@ luac.out
 tmp
 build
 .vscode
+.cache

@@ -1,13 +1,8 @@
 #ifndef LUAUMB_LOCALIZER_H
 #define LUAUMB_LOCALIZER_H
 
-#include <filesystem>
-#include <map>
-
 #include "Luau/Location.h"
 #include "Luau/ParseResult.h"
-
-#include "utils.hpp"
 
 struct Location {
     unsigned int begin_line, begin_column, end_line, end_column;
