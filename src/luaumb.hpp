@@ -4,7 +4,7 @@
 #include <string>
 
 #ifndef LUAUMB_VERSION
-#define LUAUMB_VERSION "0.1-dev"
+#define LUAUMB_VERSION "0.1"
 #endif
 
 #ifndef LUAUMB_LUAU_VERSION

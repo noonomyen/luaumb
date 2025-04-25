@@ -24,8 +24,6 @@ void luau_fvalue_init() {
     }
 }
 
-// TODO: handle error/result by returning it instead of outputting it to stdout.
-
 void luaumb::bundle(const std::string& main_file, const std::string& out_file) {
     if (!fvalue_inited) {
         luau_fvalue_init();
@@ -50,7 +48,7 @@ void luaumb::bundle(const std::string& main_file, const std::string& out_file) {
 
         if (!file) {
             std::cout << "Couldn't read source " << module_path.path.string() << std::endl;
-            return; // TODO: Return error
+            return;
         }
 
         if ((*file).length() == 0) {
@@ -152,7 +150,7 @@ void luaumb::bundle(const std::string& main_file, const std::string& out_file) {
     std::ofstream out_fs(out_file);
     if (!out_fs) {
         std::cout << "Couldn't open output file " << out_file << std::endl;
-        return; // TODO: Return error
+        return;
     }
     out_fs << out;
     out_fs.close();
