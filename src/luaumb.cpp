@@ -103,10 +103,16 @@ void luaumb::bundle(const std::string& main_file, const std::string& out_file) {
             if (require.path.rfind("./", 0) == 0 || require.path.rfind("../", 0) == 0) {
                 path = require.path;
             } else if (require.path.rfind("@", 0) == 0) {
-                const auto alias_info = config.aliases.find(require.path.substr(1));
+                const auto slash = require.path.find('/');
+                const auto alias = slash == std::string::npos ? require.path.substr(1) : require.path.substr(1, slash - 1);
+                const auto alias_info = config.aliases.find(alias);
+
                 if (alias_info == NULL) throw std::runtime_error("Error, is not a valid alias: " + require.path);
+
                 path = alias_info->configLocation;
                 path = path.lexically_relative(module_path.relative.parent_path()).relative_path() / std::filesystem::path(alias_info->value);
+
+                if (slash != std::string::npos) path = path / require.path.substr(slash + 1);
             } else {
                 continue;
             }
