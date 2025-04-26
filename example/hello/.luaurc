@@ -4,7 +4,6 @@
     "lintErrors": true,
     "typeErrors": true,
     "aliases": {
-        "w": "./world",
-        "s": "./space"
+        "self": "./"
     }
 }

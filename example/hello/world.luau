@@ -1,3 +1,3 @@
 return {
-    text = "World!"
+    text = " World!"
 }

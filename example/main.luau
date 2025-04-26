@@ -16,10 +16,5 @@ print("PI: " .. pi)
 
 print("-----")
 
-print("Try to print Counter without require: " .. tostring(Counter))
-
 print(require("./hello").text)
 print(require("./good/space/world").text)
-
-require("./empty")
-print(require("./empty"))

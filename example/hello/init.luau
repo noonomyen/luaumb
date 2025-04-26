@@ -1,3 +1,3 @@
 return {
-    text = ("Hello" .. require("@s").text)
+    text = ("Hello" .. require("@self/world").text)
 }
