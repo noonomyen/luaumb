@@ -8,7 +8,7 @@
 #endif
 
 #ifndef LUAUMB_LUAU_VERSION
-#define LUAUMB_LUAU_VERSION "0.670"
+#define LUAUMB_LUAU_VERSION "0.671"
 #endif
 
 #ifndef LUAUMB_LIB_BASE64_VERSION
