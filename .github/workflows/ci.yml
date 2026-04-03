@@ -54,7 +54,3 @@ jobs:
 
     - name: Build
       run: cmake --build ./build --config ${{ matrix.build_type }} --parallel
-
-    - name: Upload last build
-      run: |
-        curl -X PUT -H "Authorization: Bearer ${{ secrets.CDN_API_NOONOMYEN }}" --data-binary "@${{ matrix.output_file }}/${{ matrix.target_name }}" "https://cdn-api.noonomyen.com/static/repo/luaumb?key=ci-last-build/${{ matrix.build_type }}/${{ matrix.os }}/${{ matrix.c_compiler }}/${{ matrix.target_name }}"
