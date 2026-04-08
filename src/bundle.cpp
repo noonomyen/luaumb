@@ -99,6 +99,8 @@ string LuauModuleBundle::build() {
         if (pos_line < lines.size()) for (unsigned int i = pos_line; i < lines.size(); i++) out += lines[i];
         out += "\nend\n";
         out += "local _LUAUMB_LOADED_" + mapped_name + " = nil\n";
+        out += "local _LUAUMB_FENV_" + mapped_name + " = setmetatable({}, { __index = getfenv(1) })\n";
+        out += "setfenv(_LUAUMB_MODULE_" + mapped_name + ", _LUAUMB_FENV_" + mapped_name + ")\n";
         out += "local _LUAUMB_" + mapped_name + " = function() if _LUAUMB_LOADED_" + mapped_name + " == nil then ";
         out += "_LUAUMB_LOADED_" + mapped_name + " = _LUAUMB_MODULE_" + mapped_name + "() ";
         out += "end; return _LUAUMB_LOADED_" + mapped_name + "; ";
