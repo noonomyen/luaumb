@@ -27,6 +27,7 @@ To create the output file, the source code of each module is wrapped in an anony
 
 - `_LUAUMB_MODULE_NAME` stores the anonymous function.
 - `_LUAUMB_LOADED_NAME` stores the return value of the function on its first execution.
+- `_LUAUMB_FENV_NAME` stores the per-module environment table. Global reads fall back to the parent environment; assignments stay in that module, but mutations on shared parent values are still shared.
 - `_LUAUMB_NAME` acts as the `require` function (returning `_LUAUMB_LOADED_NAME`).
 
 ## `require` function

@@ -4,15 +4,15 @@
 #include <string>
 
 #ifndef LUAUMB_VERSION
-#define LUAUMB_VERSION "0.1"
+#define LUAUMB_VERSION "0.2"
 #endif
 
 #ifndef LUAUMB_LUAU_VERSION
-#define LUAUMB_LUAU_VERSION "0.671"
+#define LUAUMB_LUAU_VERSION "0.715"
 #endif
 
 #ifndef LUAUMB_LIB_BASE64_VERSION
-#define LUAUMB_LIB_BASE64_VERSION "0d0f5a8"
+#define LUAUMB_LIB_BASE64_VERSION "8d96a2a"
 #endif
 
 namespace luaumb {
