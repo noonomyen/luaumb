@@ -8,7 +8,7 @@
 #endif
 
 #ifndef LUAUMB_LUAU_VERSION
-#define LUAUMB_LUAU_VERSION "0.715"
+#define LUAUMB_LUAU_VERSION "0.716"
 #endif
 
 namespace luaumb {
