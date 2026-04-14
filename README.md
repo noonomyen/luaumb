@@ -23,12 +23,11 @@ The process begins by searching for locations where the `require` function is ca
 
 To create the output file, the source code of each module is wrapped in an anonymous function, with lazy initialization used for invoking these functions. In the source code of each module, instances of the `require` function are replaced by the corresponding wrapped function. The main file is also treated as a module to ensure that local variables declared in the main file are not accessible in other modules' local scopes once the bundle is created.
 
-`NAME` is generated from the main file to the relative file path, encoded in Base64
-
-- `_LUAUMB_MODULE_NAME` stores the anonymous function.
-- `_LUAUMB_LOADED_NAME` stores the return value of the function on its first execution.
-- `_LUAUMB_FENV_NAME` stores the per-module environment table. Global reads fall back to the parent environment; assignments stay in that module, but mutations on shared parent values are still shared.
-- `_LUAUMB_NAME` acts as the `require` function (returning `_LUAUMB_LOADED_NAME`).
+- `__LUAUMB` is a table used to store all luaumb-related data.
+- `.METATABLE` is the metatable used to set for all wrapper functions.
+- `.MODULES` is a table that stores wrapper functions representing module files.
+- `.LOADED` is a table that stores the return values of wrapper functions after they have been executed.
+- `.LOAD` is a function used to load a module, acting similarly to `require(...)`.
 
 ## `require` function
 
@@ -37,4 +36,3 @@ As you know, luaumb will replace the position of the code where the `require` fu
 ## Dependencies
 
 - [luau-lang/luau](https://github.com/luau-lang/luau)
-- [tobiaslocker/base64](https://github.com/tobiaslocker/base64)
