@@ -18,3 +18,6 @@ print("-----")
 
 print(require("./hello").text)
 print(require("./good/space/world").text)
+require("./d")
+print("Get 'TEST_GLOBAL_VAR' in main.luau")
+print(TEST_GLOBAL_VAR)

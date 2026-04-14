@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-#include "base64.hpp"
+#include <stdexcept>
 
 using namespace std;
 
@@ -20,20 +20,4 @@ string StrIntMap::operator[](const int& key) {
     }
 
     return this->int_str[key];
-}
-
-string nonstd_base64::encode(const string& str) {
-    string encoded = base64::to_base64(str);
-    size_t count_ = count(encoded.rbegin(), encoded.rend(), '=');
-    encoded = encoded.substr(0, encoded.size() - count_) + to_string(count_);
-
-    return encoded;
-}
-
-string nonstd_base64::decode(const string& str) {
-    size_t count_ = str.back() - '0';
-    string encoded = str.substr(0, str.size() - 1);
-    for (size_t i = 0; i < count_; i++) encoded += '=';
-
-    return base64::from_base64(encoded);
 }

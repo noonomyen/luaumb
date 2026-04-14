@@ -53,21 +53,34 @@ vector<string> LuauModuleBundle::load_order() {
 }
 
 string LuauModuleBundle::build() {
-    if (this->modules.find(this->main_path.relative.string()) == this->modules.end()) throw runtime_error("Error main module not found");
-
     const vector<string> order = (this->modules.size() == 1) ? vector<string>{this->modules.begin()->first} : this->load_order();
     map<string, string> mapped_order;
 
-    for (string name : order) mapped_order[name] = nonstd_base64::encode(name);
+    int i = 0;
+    for (string name : order) mapped_order[name] = to_string(i++);
+
+    if (mapped_order.find(this->main_path.relative.string()) == mapped_order.end()) throw runtime_error("Error main module not found");
 
     string out;
 
+    out += "local __LUAUMB = {}\n";
+    out += "__LUAUMB.METATABLE = { __index = getfenv() }\n";
+    out += "__LUAUMB.MODULES = {}\n";
+    out += "__LUAUMB.LOADED = {}\n";
+    out += "__LUAUMB.LOAD = function(self, module_index)\n";
+    out += "local module = self.MODULES[module_index]\n";
+    out += "if module == nil then return self.LOADED[module_index] end\n";
+    out += "local loaded = setfenv(module, setmetatable({}, self.METATABLE))()\n";
+    out += "self.MODULES[module_index] = nil\n";
+    out += "self.LOADED[module_index] = loaded\n";
+    out += "return loaded\n";
+    out += "end\n";
+
     for (string name : order) {
         const ModuleFile& module = this->modules[name];
-        const string& mapped_name = mapped_order[name];
 
         out += "-- " + module.path.relative.string() + "\n";
-        out += "local _LUAUMB_MODULE_" + mapped_name + " = function()\n";
+        out += "__LUAUMB.MODULES[" + mapped_order[name] + "] = function()\n";
 
         vector<string> lines;
         stringstream ss(module.source);
@@ -79,7 +92,7 @@ string LuauModuleBundle::build() {
         unsigned int pos_col = 0;
 
         for (const ExprCallRequire& require : module.requiress) {
-            const string call = "_LUAUMB_" + mapped_order[require.name] + "()";
+            const string call = "__LUAUMB:LOAD(" + mapped_order[require.name] + ")";
             const Location& location = require.location;
 
             if (location.begin_line == pos_line) {
@@ -98,16 +111,9 @@ string LuauModuleBundle::build() {
         out += lines[pos_line++].substr(pos_col);
         if (pos_line < lines.size()) for (unsigned int i = pos_line; i < lines.size(); i++) out += lines[i];
         out += "\nend\n";
-        out += "local _LUAUMB_LOADED_" + mapped_name + " = nil\n";
-        out += "local _LUAUMB_FENV_" + mapped_name + " = setmetatable({}, { __index = getfenv(1) })\n";
-        out += "setfenv(_LUAUMB_MODULE_" + mapped_name + ", _LUAUMB_FENV_" + mapped_name + ")\n";
-        out += "local _LUAUMB_" + mapped_name + " = function() if _LUAUMB_LOADED_" + mapped_name + " == nil then ";
-        out += "_LUAUMB_LOADED_" + mapped_name + " = _LUAUMB_MODULE_" + mapped_name + "() ";
-        out += "end; return _LUAUMB_LOADED_" + mapped_name + "; ";
-        out += "end\n";
     }
 
-    out += "_LUAUMB_" + nonstd_base64::encode(this->main_path.relative.string()) + "()";
+    out += "__LUAUMB:LOAD(" + mapped_order[this->main_path.relative.string()] + ")";
 
     return out;
 }

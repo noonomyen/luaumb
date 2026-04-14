@@ -14,9 +14,4 @@ class StrIntMap {
         std::string operator[](const int& key);
 };
 
-namespace nonstd_base64 {
-    std::string encode(const std::string& str);
-    std::string decode(const std::string& str);
-}
-
 #endif /* LUAUMB_UTILS_H */
