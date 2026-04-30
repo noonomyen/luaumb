@@ -16,7 +16,8 @@
 enum TypeAnnotationKind {
     None,
     PrevTypeAnnotationSeparator,
-    FunctionGenericTypePack
+    FunctionGenericTypePack,
+    PrevTypeAssertion
 };
 
 struct Annotations {
@@ -37,10 +38,13 @@ struct FindTypeAnnotations : public Luau::AstVisitor {
         if (auto expr = node->asExpr()) {
 
             if (auto typeAssertion = expr->as<Luau::AstExprTypeAssertion>()) {
-                // "Expr :: Type" -> "Expr"
-                std::cout << "AstExprTypeAssertion - ";
-                printLocation(typeAssertion->location);
-                list.push_back({ typeAssertion->location, typeAssertion->expr->location, None });
+
+                if (auto annotationType = typeAssertion->annotation->asType()) {
+                    // "Expr :: Type" -> "Expr"
+                    std::cout << "AstExprTypeAssertion -> Annotation - ";
+                    printLocation(annotationType->location);
+                    list.push_back({ annotationType->location, std::nullopt, PrevTypeAssertion });
+                }
             } else if (auto exprFunc = node->as<Luau::AstExprFunction>()) {
 
                 if (exprFunc->returnAnnotation) {
@@ -65,10 +69,17 @@ struct FindTypeAnnotations : public Luau::AstVisitor {
                     }
                 }
 
+                if (exprFunc->generics.size > 0) {
+                    auto generic = exprFunc->generics.data[0];
+                    // "function<T>()" -> "function()"
+                    std::cout << "AstExprFunction -> AstGenericType - " << generic->location.begin.line+1 << std::endl;
+                    list.push_back({ generic->location, std::nullopt, FunctionGenericTypePack });
+                }
+
                 if (exprFunc->genericPacks.size > 0) {
                     auto generic = exprFunc->genericPacks.data[0];
                     // "function<T..., U...>()" -> "function()"
-                    std::cout << "AstExprFunction -> GenericPacks - " << generic->location.begin.line+1 << std::endl;
+                    std::cout << "AstExprFunction -> AstGenericTypePack - " << generic->location.begin.line+1 << std::endl;
                     list.push_back({ generic->location, std::nullopt, FunctionGenericTypePack });
                 }
 
@@ -197,6 +208,7 @@ int main(int argc, char *argv[]) {
 
         auto loc = annotation.location;
 
+        // hardcoded handling for different annotation kinds to find correct location to remove.
         // find previous ":" for function return type annotations
         if (annotation.kind == PrevTypeAnnotationSeparator) {
             int line = loc.begin.line;
@@ -242,6 +254,22 @@ int main(int argc, char *argv[]) {
                 if (column >= source[line].size()) {
                     line++;
                     column = 0;
+                }
+            }
+        } else if (annotation.kind == PrevTypeAssertion) {
+            // find previous "::" for type assertions
+            int line = loc.begin.line;
+            int column = loc.begin.column;
+            while (line >= 0) {
+                if (source[line][column] == ':' && column > 0 && source[line][column - 1] == ':') {
+                    loc.begin.column = column - 1;
+                    loc.begin.line = line;
+                    break;
+                }
+                column--;
+                if (column < 0) {
+                    line--;
+                    if (line >= 0) column = source[line].size() - 1;
                 }
             }
         }
