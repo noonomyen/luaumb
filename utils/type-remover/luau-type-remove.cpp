@@ -89,6 +89,11 @@ struct FindTypeAnnotations : public Luau::AstVisitor {
                         std::cout << "AstExprFunction -> VarargAnnotation -> AstTypePackGeneric - ";
                         printLocation(annotationType->location);
                         list.push_back({ annotationType->location, std::nullopt, PrevTypeAnnotationSeparator });
+                    } else if (auto annotationType = exprFunc->varargAnnotation->as<Luau::AstTypePackVariadic>()) {
+                        // "function(...: Type)" -> "function(...)"
+                        std::cout << "AstExprFunction -> VarargAnnotation -> AstTypePackVariadic - ";
+                        printLocation(annotationType->location);
+                        list.push_back({ annotationType->location, std::nullopt, PrevTypeAnnotationSeparator });
                     }
                 }
 
